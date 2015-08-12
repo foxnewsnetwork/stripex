@@ -1,4 +1,4 @@
-defmodule Stripe.Utils do
+defmodule Stripex.Utils do
 
   @spec safe_atomize_keys(map, list(atom)) :: map
   @doc """

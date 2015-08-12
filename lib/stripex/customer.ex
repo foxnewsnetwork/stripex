@@ -1,9 +1,9 @@
-defmodule Stripe.Customer do
+defmodule Stripex.Customer do
 @moduledoc """
-  The Struct and type spec information for a Stripe Customer
+  The Struct and type spec information for a Stripex Customer
   """
 
-  @type t :: %Stripe.Customer{
+  @type t :: %Stripex.Customer{
                      id: String.t,
                  object: String.t,
                 created: number,
@@ -11,12 +11,12 @@ defmodule Stripe.Customer do
             description: String.t,
              delinquent: boolean,
                metadata: map,
-          subscriptions: list(Stripe.Subscription),
-               discount: Stripe.Discount | nil,
+          subscriptions: list(Stripex.Subscription),
+               discount: Stripex.Discount | nil,
         account_balance: number,
                currency: String.t,
-                  cards: list(Stripe.Card),
-           default_card: String.t | Stripe.Card | nil
+                  cards: list(Stripex.Card),
+           default_card: String.t | Stripex.Card | nil
   }
 
   defstruct          id: "",

@@ -1,6 +1,8 @@
-# Stripe
+# StripeX
 
-Stripe API client for Elixir
+Another implementation of the Stripe API client for Elixir, based off of: https://github.com/SenecaSystems/stripe
+
+This one is built on top of httpoison and poison instead of httpotion and jazz.
 
 ** Work in progress **
 
@@ -8,14 +10,15 @@ Stripe API client for Elixir
 
 The goal is to map all objects in the Stripe API 1-1
 
-### TODO
+### TODO List
+Things to do haven't been checked.
 
 #### Resources
 
 - [ ] Charges
 - [ ] Refunds
-- [ ] Customers
-- [ ] Cards
+- [x] Customers
+- [x] Cards
 - [ ] Subscriptions
 - [ ] Plans
 - [ ] Coupons
@@ -27,10 +30,16 @@ The goal is to map all objects in the Stripe API 1-1
 - [ ] Recipients
 - [ ] Application Fees
 - [ ] Application Fee Refunds
-- [ ] Account
+- [x] Account
 - [ ] Balance
 - [ ] Events
 - [ ] Tokens
+
+#### Methods
+- [x] post
+- [ ] put
+- [x] get
+- [ ] delete
 
 #### Features
 
@@ -48,7 +57,9 @@ in the Stripe ecosystem, we should be able to make calls such as:
 ```Elixir
 Stripe.start
 
-customers = Stripe.Customers.get
+customer = Stripe.Customers.create %{email: "you@example.co", description: "whatever", source: "token_1234"}
+
+customers = Stripe.Customers.all
 # => [%Stripe.Customer{account_balance: 0,...]
 
 length customers
@@ -75,8 +86,8 @@ customer = List.first customers
   #         "url" => "/v1/customers/cus_5HYg9UxTAsC84D/subscriptions"}}
 
 # Get a customer by ID
-customer_id = customer.id
-Stripe.Customers.get %{id: customer_id}
+customer_id = customer.id # cus_xxx000111 or whatever
+Stripe.Customers.retrieve customer_id
 # => %Stripe.Customer{account_balance: 0, ...
 
 # Get a card (nested under customers)

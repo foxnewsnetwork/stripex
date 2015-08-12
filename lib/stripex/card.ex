@@ -1,8 +1,8 @@
-defmodule Stripe.Card do
+defmodule Stripex.Card do
   @moduledoc """
-  The Struct and type spec information for a Stripe Card
+  The Struct and type spec information for a Stripex Card
   """
-  @type t :: %Stripe.Card{
+  @type t :: %Stripex.Card{
                      id: String.t,
                  object: String.t,
                   last4: String.t,

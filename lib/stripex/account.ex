@@ -1,9 +1,9 @@
-defmodule Stripe.Account do
+defmodule Stripex.Account do
   @moduledoc """
-  The Struct and type definition for a Stripe Account
+  The Struct and type definition for a Stripex Account
   """
 
-  @type t :: %Stripe.Account{
+  @type t :: %Stripex.Account{
                       id: String.t,
                   object: String.t,
            business_name: String.t,

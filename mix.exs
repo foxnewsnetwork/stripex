@@ -4,7 +4,7 @@ defmodule Stripex.Mixfile do
   def project do
     [
       app: :stripex,
-      version: "0.0.2",
+      version: "0.0.3",
       source_url: "https://github.com/foxnewsnetwork/stripex",
       elixir: "~> 1.0",
       deps: deps,

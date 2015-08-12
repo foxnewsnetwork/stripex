@@ -25,7 +25,7 @@ defmodule Stripex.Mixfile do
 
   defp description do
     """
-    Wrapper around Stripe's API.
+    A much more ruby-stripe-like wrapper around Stripe's API (built with Poison).
 
     Full documentation can be found at https://stripe.com/docs/api
     """

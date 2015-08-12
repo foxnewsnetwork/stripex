@@ -2,7 +2,7 @@ defmodule Stripex.Response do
 
   @type t :: %Stripex.Response{
     status_code: number,
-    data: term,
+    model: term,
     success?: boolean,
     errors: list,
     raw_response: Stripex.Response.http_poison_response
@@ -13,77 +13,48 @@ defmodule Stripex.Response do
     headers: list
   }
 
-  defstruct data: nil,
+  defstruct model: nil,
             raw_response: nil,
             status_code: nil,
             success?: true,
             errors: []
 
-  @spec new({:ok, HTTPoison.Response}) :: Stripex.Response | {:error, term}
-  def new(response) do
-    new(response, %{})
-  end
-
-  @spec new({:ok, HTTPoison.Response}, map) :: Stripex.Response | {:error, term}
-  def new({:ok, response}, options) do
-    case parse_body(response, options) do
-      {:ok, data} ->
-        wrap_success(data, response)    
-      {:error, error} ->
-        wrap_failure(error, response)
-    end
-  end
-
-  defp wrap_failure(error, response) do
-    response = wrap_success(error, response)
-    errors = Map.to_list error["error"]
-    %{response | success?: false, errors: errors }
-  end
-
-  defp wrap_success(data, %{status_code: c}=response) do
-    %Stripex.Response{ data: data, raw_response: response, status_code: c }
-  end
-
-  defp parse_body(response, options) do
+  @spec new({:ok | :error, HTTPoison.Response}, atom) :: Stripex.Response
+  def kill({:ok, response}, type) do
     case Poison.decode(response.body) do
-      {:ok, data} ->
-        if success? response do
-          {:ok, cast_data(data, options)}
-        else
-          {:error, data}
-        end
-      error ->
-        {:error, error}
+      {:ok, %{"id" => id}} -> %Stripex.Killed{id: id, type: type} |> wrap_success(response)
+      {:error, error} -> wrap_failure error, response
     end
   end
-
-  @spec success?(%{status_code: number}) :: boolean
-  defp success?(%{status_code: 200}) do
-    true
-  end
-  defp success?(_), do: false
-
-  @spec cast_data(map, map)   :: {:ok, map}
-  @spec cast_data(list, map)  :: {:ok, list(map)}
-  # If there is a "data" field present (for list responses), pull that out
-  defp cast_data(%{"data" => data}, options) do
-    cast_data(data, options)
+  def kill({:error, response}, type) do
+    new({:error, response}, type)
   end
 
-  # Just pull out known keys on the passed in `as: struct`, other than the
-  # :__struct__ key
-  defp cast_data(data, %{as: as_struct}) when is_map(data) do
-    struct_keys = Map.keys(as_struct.__struct__) |> List.delete :__struct__
-    struct(as_struct, Stripex.Utils.safe_atomize_keys(data, struct_keys))
+  @spec new({:ok | :error, HTTPoison.Response}, atom | [atom]) :: Stripex.Response
+  def new({:ok, response}, types) when is_list(types) do
+    case new({:ok, response}, %{"data" => types}) do
+      %{success?: true, model: %{"data" => resources}} -> wrap_success(resources, response)
+      error_response -> error_response
+    end
+  end
+  def new({:ok, response}, type) do
+    case Poison.decode(response.body, as: type) do
+      {:ok, resource} -> wrap_success resource, response
+      {:error, error} -> wrap_failure error, response
+    end
+  end
+  def new({:error, response}, _) do
+    errors = Map.to_list response.body
+    %Stripex.Response{success?: false, raw_response: response, status_code: response.status_code, errors: errors}
   end
 
-  # For lists, loop over them and cast their members
-  defp cast_data(data, %{as: _struct}=options) when is_list(data) do
-    Enum.map data, &cast_data(&1, options)
+  defp wrap_failure(error, %{status_code: c}=response) do
+    errors = [error, {:parse_error, "malformed json"}]
+    %Stripex.Response{ success?: false, raw_response: response, status_code: c, errors: errors }
   end
 
-  # If no :as option is passed, just return the data as is
-  defp cast_data(data, _options) do
-    data
+  defp wrap_success(model, %{status_code: c}=response) do
+    %Stripex.Response{ model: model, raw_response: response, status_code: c }
   end
+
 end

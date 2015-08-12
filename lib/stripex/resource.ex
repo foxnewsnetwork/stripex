@@ -2,12 +2,12 @@ defmodule Stripex.Resource do
   defmacro __using__(_) do
     quote location: :keep do
       @resource Module.get_attribute(__MODULE__, :resource) || nil
-      @trailing_param_key_regex ~r/(.+)\/\:\w+\Z/
 
       def retrieve(ids) when is_tuple(ids) do
         resource_path(ids)
         |> Stripex.get
-        |> Stripex.Response.new(%{as: @resource})
+        |> Stripex.Response.new(@resource)
+        |> just_model
       end
       def retrieve(id), do: retrieve({id})
       
@@ -17,7 +17,8 @@ defmodule Stripex.Resource do
 
         resource_path(ids)
         |> Stripex.post({:form, list}, content_type: "multipart/form-data")
-        |> Stripex.Response.new(%{as: @resource})
+        |> Stripex.Response.new(@resource)
+        |> just_model
       end
       def create(id, list), do: create({id}, list)
       def create(list), do: create({}, list)
@@ -26,7 +27,8 @@ defmodule Stripex.Resource do
       def all(ids, params) when is_tuple(ids) do
         resource_path(ids, params)
         |> Stripex.get
-        |> Stripex.Response.new(%{as: @resource})
+        |> Stripex.Response.new([@resource])
+        |> just_model
       end
       def all(ids) when is_tuple(ids) do
         all(ids, %{})
@@ -41,16 +43,22 @@ defmodule Stripex.Resource do
       def delete(ids) when is_tuple(ids) do
         resource_path(ids)
         |> Stripex.delete
-        |> Stripex.Response.new(%{as: @resource})
+        |> Stripex.Response.kill(@resource)
+        |> just_model
       end
       def delete(id), do: delete({id})
 
-      def update(ids, params) when is_tuple(ids) do
+      def update(ids, params) when is_tuple(ids) and (is_list(params) or is_map(params)) do
+        list = Fox.DictExt.shallowify_keys params
+
         resource_path(ids)
-        |> Stripex.put(params)
-        |> Stripex.Response.new(%{as: @resource})
+        |> Stripex.post({:form, list}, content_type: "multipart/form-data")
+        |> Stripex.Response.new(@resource)
+        |> just_model
       end
       def update(id, params), do: update({id}, params)
+
+      defp just_model(%{model: model}), do: model
 
       defp resource_path(ids) when is_tuple(ids) do
         @endpoint |> Fox.UriExt.fmt(ids) |> String.replace(~r/\/:id$/, "", global: false)

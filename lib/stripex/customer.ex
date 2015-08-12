@@ -5,6 +5,7 @@ defmodule Stripex.Customer do
 
   @type t :: %Stripex.Customer{
                      id: String.t,
+                  email: String.t,
                  object: String.t,
                 created: number,
                livemode: boolean,
@@ -20,6 +21,7 @@ defmodule Stripex.Customer do
   }
 
   defstruct          id: "",
+                  email: "",
                  object: "customer",
                 created: 0,
                livemode: false,

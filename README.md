@@ -20,7 +20,7 @@ Things to do haven't been checked.
 - [x] Customers
 - [x] Cards
 - [ ] Subscriptions
-- [ ] Plans
+- [x] Plans
 - [ ] Coupons
 - [ ] Discounts
 - [ ] Invoices
@@ -36,14 +36,19 @@ Things to do haven't been checked.
 - [ ] Tokens
 
 #### Methods
-- [x] post
-- [ ] put
-- [x] get
-- [ ] delete
+- [x] retrieve
+- [x] all
+- [x] update
+- [x] delete
+- [x] create
 
 #### Features
 
 - [ ] Cast nested resources
+
+#### Testing
+
+- [ ] Write tests (lol)
 
 ## Authentication
 

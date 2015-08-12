@@ -21,6 +21,9 @@ defmodule Stripex.Resource do
         |> just_model
       end
       def create(id, list), do: create({id}, list)
+      def create(id) when is_binary(id) do
+        create({id}, %{})
+      end
       def create(list), do: create({}, list)
 
       def all, do: all({}, %{})

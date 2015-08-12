@@ -22,7 +22,8 @@ defmodule Stripex.Response do
   @spec new({:ok | :error, HTTPoison.Response}, atom) :: Stripex.Response
   def kill({:ok, response}, type) do
     case Poison.decode(response.body) do
-      {:ok, %{"id" => id}} -> %Stripex.Killed{id: id, type: type} |> wrap_success(response)
+      {:ok, %{"id" => id}} -> 
+        %Stripex.Killed{id: id, type: type} |> wrap_success(response)
       {:error, error} -> wrap_failure error, response
     end
   end

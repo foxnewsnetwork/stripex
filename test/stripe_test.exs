@@ -15,6 +15,28 @@ defmodule StripexTest do
     }
   }
 
+  @subscription_attr %{
+    plan: "test",
+    source: %{
+      "object" => "card",
+      "number" => "4242424242424242",
+      "exp_month" => 12,
+      "exp_year" => 25,
+      "cvc" => "666",
+      "name" => "Roxy Monster"
+    },
+    metadata: %{
+      "now_playing" => "Hikari Are",
+      "artist" => "Maaya Sakamoto",
+      "genre" => "Jpop"
+    }
+  }
+
+  test "it should fetch the test plan" do
+    plan = Stripex.Plans.retrieve "test"
+    assert plan.id == "test"
+  end
+
   test "creating a customer, getting a customer, and updating a customer" do
     customer = Stripex.Customers.create @customer_attr
     id = customer.id
@@ -28,6 +50,25 @@ defmodule StripexTest do
 
     customer = Stripex.Customers.update(id, %{email: "dog@do.ge"})
     assert customer.email == "dog@do.ge"
+  end
+
+  test "it should allow me to create, update, and destroy subscriptions" do
+    [customer|_] = Stripex.Customers.all
+    subscription = customer.id |> Stripex.Subscriptions.create(@subscription_attr)
+    assert subscription.id
+    assert subscription.plan["id"] == @subscription_attr[:plan]
+    assert subscription.status == "active"
+    assert subscription.metadata == @subscription_attr[:metadata]
+    assert subscription.customer == customer.id
+    assert subscription.quantity == 1
+
+    subscription = {customer.id, subscription.id} |> Stripex.Subscriptions.update(%{"quantity" => 2})
+    assert subscription.quantity == 2
+
+    dead = {customer.id, subscription.id} |> Stripex.Subscriptions.delete
+    assert dead.deleted?
+    assert dead.type == Stripex.Subscription
+    assert dead.id == subscription.id
   end
 
   test "deleting a customer" do
@@ -45,4 +86,5 @@ defmodule StripexTest do
     customers = Stripex.Customers.all
     assert Enum.count(customers) > 0
   end
+
 end

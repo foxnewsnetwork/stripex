@@ -10,6 +10,8 @@ This one is built on top of httpoison and poison instead of httpotion and jazz.
 
 The goal is to map all objects in the Stripe API 1-1
 
+Because Elixir is essentially Ruby with a tan and a different colored blouse, StripeX attempts to mimic ruby_stripe's API as closely as reasonable.
+
 ### TODO List
 Things to do haven't been checked.
 
@@ -19,7 +21,7 @@ Things to do haven't been checked.
 - [ ] Refunds
 - [x] Customers
 - [x] Cards
-- [ ] Subscriptions
+- [x] Subscriptions
 - [x] Plans
 - [ ] Coupons
 - [ ] Discounts
@@ -48,7 +50,7 @@ Things to do haven't been checked.
 
 #### Testing
 
-- [ ] Write tests (lol)
+- [ ] Write more tests (lol)
 
 ## Authentication
 
@@ -96,7 +98,7 @@ Stripe.Customers.retrieve customer_id
 # => %Stripe.Customer{account_balance: 0, ...
 
 # Get a card (nested under customers)
-Stripe.Cards.get %{customer_id: customer_id, id: customer.default_card}
+Stripe.Cards.retrieve {customer_id, customer.default_card}
 # => %Stripe.Card{address_city: nil, address_country: nil, address_line1: nil,
 #         address_line1_check: nil, address_line2: nil, address_state: nil,
 #         address_zip: nil, address_zip_check: nil, brand: "Visa", country: "US",
@@ -105,3 +107,30 @@ Stripe.Cards.get %{customer_id: customer_id, id: customer.default_card}
 #         funding: "credit", id: "card_156zZS2eZvKYlo2CcevEs4Be", last4: "4242",
 #         name: nil, object: "card"}
 ```
+
+Consult the `test/stripe_test.exs` file for a better idea of how to use this library.
+
+### Testing
+This library isn't yet fully tested... but to run the tests we have, here's what you must do:
+
+- Sign up for a Stripe Account (do that here https://stripe.com)
+
+- Get your server test key from your dashboard (do that here https://dashboard.stripe.com/account)
+
+- Edit the `config/config.exs` file
+```elixir
+config :stripe,
+  secret_key: YOUR_SECRET_KEY_HERE # looks something like "sk_test_sUkci83ae666fUcksAtan"
+```
+>fyi: the present secret_key is linked to my stripe test account, you can probably test with it (unless I reroll my keys in the future), but I advise you use your own since you'll be able to see Stripe's logs to see if things really worked or not.
+
+
+- Manually setup a plan with id "test" (do that here https://dashboard.stripe.com/test/plans)
+
+- You can now run the tests
+```shell
+mix deps.get
+mix test
+```
+
+Be warned, these tests actually hit your stripe account (this is why we use the test one stripe stripe provides), so you'll need internet connection to run them.

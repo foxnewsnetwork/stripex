@@ -39,7 +39,7 @@ defmodule Stripex.Response do
     end
   end
   def new({:ok, response}, type) do
-    case Poison.decode(response.body, as: type) do
+    case response |> decode_response_as(type) do
       {:ok, resource} -> wrap_success resource, response
       {:error, error} -> wrap_failure error, response
     end
@@ -47,6 +47,15 @@ defmodule Stripex.Response do
   def new({:error, response}, _) do
     errors = Map.to_list response.body
     %Stripex.Response{success?: false, raw_response: response, status_code: response.status_code, errors: errors}
+  end
+
+  defp decode_response_as(%{status_code: 200}=response, type) do
+    Poison.decode(response.body, as: type)
+  end
+
+  defp decode_response_as(%{status_code: c}, _) do
+    error = {:exception, Stripex.Error.exception(c)}
+    {:error, error}
   end
 
   defp wrap_failure(error, %{status_code: c}=response) do

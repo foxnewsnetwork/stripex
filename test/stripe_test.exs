@@ -37,6 +37,11 @@ defmodule StripexTest do
     assert plan.id == "test"
   end
 
+  test "retrieving nonexisting resources should return nil" do
+    plan = Stripex.Plans.retrieve "non-existent-plan-name"
+    refute plan
+  end
+
   test "creating a customer, getting a customer, and updating a customer" do
     customer = Stripex.Customers.create @customer_attr
     id = customer.id

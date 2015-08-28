@@ -4,7 +4,7 @@ defmodule Stripex.Mixfile do
   def project do
     [
       app: :stripex,
-      version: "0.0.4",
+      version: "0.0.5",
       source_url: "https://github.com/foxnewsnetwork/stripex",
       elixir: "~> 1.0",
       deps: deps,
@@ -19,8 +19,8 @@ defmodule Stripex.Mixfile do
 
   defp deps do
     [{:httpoison, "~> 0.7"},
-    {:poison, "~> 1.4.0"},
-    {:fox, "~> 0.0.7"}]
+    {:poison, "~> 1.4"},
+    {:fox, "~> 0.1"}]
   end
 
   defp description do

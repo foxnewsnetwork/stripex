@@ -19,8 +19,8 @@ defmodule Stripex.Mixfile do
 
   defp deps do
     [{:httpoison, "~> 0.7"},
-    {:poison, "~> 1.4"},
-    {:fox, "~> 0.1"}]
+    {:poison, ">= 1.4.0"},
+    {:fox, ">= 0.0.7"}]
   end
 
   defp description do

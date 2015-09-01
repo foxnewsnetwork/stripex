@@ -1,5 +1,5 @@
 defmodule Stripex.Customer do
-@moduledoc """
+  @moduledoc """
   The Struct and type spec information for a Stripex Customer
   """
 

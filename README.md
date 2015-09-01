@@ -64,9 +64,9 @@ in the Stripe ecosystem, we should be able to make calls such as:
 ```Elixir
 Stripe.start
 
-customer = Stripe.Customers.create %{email: "you@example.co", description: "whatever", source: "token_1234"}
+{:ok, customer} = Stripe.Customers.create %{email: "you@example.co", description: "whatever", source: "token_1234"}
 
-customers = Stripe.Customers.all
+{:ok, customers} = Stripe.Customers.all
 # => [%Stripe.Customer{account_balance: 0,...]
 
 length customers
@@ -95,17 +95,17 @@ customer = List.first customers
 # Get a customer by ID
 customer_id = customer.id # cus_xxx000111 or whatever
 Stripe.Customers.retrieve customer_id
-# => %Stripe.Customer{account_balance: 0, ...
+# => {:ok, %Stripe.Customer{account_balance: 0, ...}}
 
 # Get a card (nested under customers)
 Stripe.Cards.retrieve {customer_id, customer.default_card}
-# => %Stripe.Card{address_city: nil, address_country: nil, address_line1: nil,
+# => {:ok, %Stripe.Card{address_city: nil, address_country: nil, address_line1: nil,
 #         address_line1_check: nil, address_line2: nil, address_state: nil,
 #         address_zip: nil, address_zip_check: nil, brand: "Visa", country: "US",
 #         customer: "cus_5HYg9UxTAsC84D", cvc_check: "pass", dynamic_last4: nil,
 #         exp_month: 11, exp_year: 2016, fingerprint: "Xt5EWLLDS7FJjR1c",
 #         funding: "credit", id: "card_156zZS2eZvKYlo2CcevEs4Be", last4: "4242",
-#         name: nil, object: "card"}
+#         name: nil, object: "card"}}
 ```
 
 Consult the `test/stripe_test.exs` file for a better idea of how to use this library.
@@ -119,7 +119,8 @@ This library isn't yet fully tested... but to run the tests we have, here's what
 
 - Edit the `config/config.exs` file
 ```elixir
-config :stripe,
+config :gateway, Stripex,
+  url: "https://api.stripe.com",
   secret_key: YOUR_SECRET_KEY_HERE # looks something like "sk_test_sUkci83ae666fUcksAtan"
 ```
 >fyi: the present secret_key is linked to my stripe test account, you can probably test with it (unless I reroll my keys in the future), but I advise you use your own since you'll be able to see Stripe's logs to see if things really worked or not.

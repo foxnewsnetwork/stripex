@@ -5,13 +5,24 @@ defmodule StripexTest do
     Stripex.start
   end
 
-  @customer_attr %{ 
+  @customer_attr %{
     email: "stripex.spec@invisible.com",
     description: "stripex testing customer",
     metadata: %{
       "now_playing" => "Halycon",
       "artist" => "Reol",
       "genre" => "Jpop"
+    }
+  }
+
+  @card_attr %{
+    source: %{
+      "object" => "card",
+      "number" => "4242424242424242",
+      "exp_month" => 12,
+      "exp_year" => 25,
+      "cvc" => "666",
+      "name" => "Roxy Monster"
     }
   }
 
@@ -55,6 +66,20 @@ defmodule StripexTest do
 
     {:ok, customer} = Stripex.Customers.update(id, %{email: "dog@do.ge"})
     assert customer.email == "dog@do.ge"
+  end
+
+  test "creating a card, getting a card, and updating a card" do
+    {:ok, customer} = Stripex.Customers.create @customer_attr
+    {:ok, card} = Stripex.Cards.create(customer.id, @card_attr)
+    id = card.id
+    assert id
+    assert card.name == @card_attr[:source]["name"]
+
+    {:ok, card} = Stripex.Cards.retrieve{customer.id, id}
+    assert card.id == id
+
+    {:ok, card} = Stripex.Cards.update({customer.id, id}, %{name: "name2"})
+    assert card.name == "name2"
   end
 
   test "it should allow me to create, update, and destroy subscriptions" do

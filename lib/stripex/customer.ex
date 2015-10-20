@@ -16,8 +16,8 @@ defmodule Stripex.Customer do
                discount: Stripex.Discount | nil,
         account_balance: number,
                currency: String.t,
-                  cards: list(Stripex.Card),
-           default_card: String.t | Stripex.Card | nil
+                sources: list(Stripex.Card),
+         default_source: String.t | Stripex.Card | nil
   }
 
   defstruct          id: "",
@@ -32,6 +32,6 @@ defmodule Stripex.Customer do
                discount: nil,
         account_balance: 0,
                currency: "usd",
-                  cards: [],
-           default_card: nil
+                sources: [],
+         default_source: nil
 end
